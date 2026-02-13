@@ -2,3 +2,4 @@ obj/
 bin/
 .vs/
 wwwroot/libs/
+wwwroot/assets/

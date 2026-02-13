@@ -1,0 +1,7 @@
+﻿﻿ReactPage
+
+● .NET App MVC;
+● React App in ReactFolder;
+● ReactApp endpoint in HomeController without Layout;
+● set build dir to '../wwwroot/libs';
+● turn off output files hashes on build;

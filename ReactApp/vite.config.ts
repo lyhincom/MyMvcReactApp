@@ -34,8 +34,8 @@ export default defineConfig({
   server: { port: PORT, host: true },
   preview: { port: PORT, host: true },
   build: {
-    outDir: path.resolve(__dirname, '../wwwroot/libs'),
-    emptyOutDir: true,
+    outDir: path.resolve(__dirname, '../wwwroot'),
+    emptyOutDir: false,
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name].js',
