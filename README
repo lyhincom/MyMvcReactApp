@@ -1,7 +1,13 @@
-﻿﻿ReactPage
+﻿﻿React SPA
 
 ● .NET App MVC;
 ● React App in ReactFolder;
 ● ReactApp endpoint in HomeController without Layout;
 ● set build dir to '../wwwroot/libs';
 ● turn off output files hashes on build;
+Note: how to start and run spa app 'live' for debugging;
+- npm run build (for deployment);
+- npm run dev (files are im memory);
+TODO: enable identity;
+TODO: enable jwt auth login response;
+TODO: enable interceptors;
