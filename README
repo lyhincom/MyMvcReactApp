@@ -11,3 +11,5 @@ Note: how to start and run spa app 'live' for debugging;
 TODO: enable identity;
 TODO: enable jwt auth login response;
 TODO: enable interceptors;
+
+https://localhost:7026/api/WeatherForecast
