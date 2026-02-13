@@ -1,7 +1,25 @@
-﻿﻿ReactPage
+﻿﻿React SPA
 
 ● .NET App MVC;
 ● React App in ReactFolder;
 ● ReactApp endpoint in HomeController without Layout;
 ● set build dir to '../wwwroot/libs';
 ● turn off output files hashes on build;
+Note: how to start and run spa app 'live' for debugging;
+- npm run build (for deployment);
+- npm run dev (files are im memory);
+● enabled identity;
+- creds: test@test.tt / Qwerty_0;
+- added login endpoint with jwt token;
+- added swagger n checked authed endpoint with the token;
+TODO: enable jwt auth login response;
+TODO: enable interceptors;
+
+APIs:
+https://localhost:7026/api/wf
+https://localhost:7026/api/wf/auth
+
+Creds:
+test@test.tt / Qwerty_0
+
+Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/minimal-free-preview.jpg]
