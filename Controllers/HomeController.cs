@@ -6,6 +6,11 @@ namespace MyMvcReactApp.Controllers;
 
 public class HomeController : Controller
 {
+    public IActionResult ReactApp()
+    {
+        return View();
+    }
+
     public IActionResult Index()
     {
         return View();
