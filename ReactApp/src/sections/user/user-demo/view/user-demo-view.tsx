@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -82,22 +82,49 @@ export function UserDemoView() {
 
   // Fetch users from API
   useEffect(() => {
+    let isMounted = true;
+    let isCancelled = false;
+
     async function fetchUsers() {
       try {
         setLoading(true);
         setError(null);
+        console.log('Fetching users from API...');
         const apiUsers = await getUsers();
-        const mappedUsers = apiUsers.map(mapApiUserToUserProps);
-        setUsers(mappedUsers);
+        console.log('Users fetched successfully:', apiUsers);
+
+        // Only update state if component is still mounted and not cancelled
+        if (isMounted && !isCancelled) {
+          const mappedUsers = apiUsers.map(mapApiUserToUserProps);
+          setUsers(mappedUsers);
+          setLoading(false);
+        } else {
+          // If cancelled, still set loading to false
+          setLoading(false);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch users');
-        console.error('Error fetching users:', err);
-      } finally {
+        console.error('Error in fetchUsers:', err);
+        // Always set loading to false on error, even if cancelled
         setLoading(false);
+        
+        // Only update error state if component is still mounted and not cancelled
+        if (isMounted && !isCancelled) {
+          const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users';
+          setError(errorMessage);
+        }
       }
     }
 
     fetchUsers();
+
+    // Cleanup function to prevent state updates after unmount
+    // eslint-disable-next-line consistent-return
+    return () => {
+      isMounted = false;
+      isCancelled = true;
+      // Ensure loading is false on cleanup
+      setLoading(false);
+    };
   }, []);
 
   const dataFiltered = applyEmailFilter({
