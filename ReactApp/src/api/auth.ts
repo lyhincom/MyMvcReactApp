@@ -3,13 +3,13 @@ import { CONFIG } from 'src/config-global';
 // ----------------------------------------------------------------------
 
 export type LoginRequest = {
-  Login: string;
-  Password: string;
+  login: string;
+  password: string;
 };
 
 export type LoginResponse = {
-  Token: string;
-  Expires: string;
+  token: string;
+  expires: string;
 };
 
 export type ApiError = {

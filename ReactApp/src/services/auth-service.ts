@@ -14,9 +14,11 @@ export class AuthService {
   async signIn(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await login(credentials);
 
+    console.log('response', response);
+
     // Store token in localStorage
-    this.setToken(response.Token);
-    this.setTokenExpires(response.Expires);
+    this.setToken(response.token);
+    this.setTokenExpires(response.expires);
 
     return response;
   }

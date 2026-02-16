@@ -37,8 +37,8 @@ export function SignInView() {
 
       try {
         await authService.signIn({
-          Login: email,
-          Password: password,
+          login: email,
+          password,
         });
 
         // Navigate to home page on success
