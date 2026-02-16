@@ -1,7 +1,10 @@
+import type { FormEvent } from 'react';
+
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -11,6 +14,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { authService } from 'src/services/auth-service';
+
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -18,25 +23,59 @@ import { Iconify } from 'src/components/iconify';
 export function SignInView() {
   const router = useRouter();
 
+  const [email, setEmail] = useState('test@test.tt');
+  const [password, setPassword] = useState('Qwerty_0');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const handleSignIn = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+      setError(null);
+      setLoading(true);
+
+      try {
+        await authService.signIn({
+          Login: email,
+          Password: password,
+        });
+
+        // Navigate to home page on success
+        router.push('/');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred during login');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [email, password, router]
+  );
 
   const renderForm = (
     <Box
+      component="form"
+      onSubmit={handleSignIn}
       sx={{
         display: 'flex',
         alignItems: 'flex-end',
         flexDirection: 'column',
       }}
     >
+      {error && (
+        <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
       <TextField
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
+        required
         sx={{ mb: 3 }}
         slotProps={{
           inputLabel: { shrink: true },
@@ -51,14 +90,21 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         type={showPassword ? 'text' : 'password'}
+        disabled={loading}
+        required
         slotProps={{
           inputLabel: { shrink: true },
           input: {
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                  disabled={loading}
+                >
                   <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
                 </IconButton>
               </InputAdornment>
@@ -74,9 +120,9 @@ export function SignInView() {
         type="submit"
         color="inherit"
         variant="contained"
-        onClick={handleSignIn}
+        disabled={loading}
       >
-        Sign in
+        {loading ? 'Signing in...' : 'Sign in'}
       </Button>
     </Box>
   );

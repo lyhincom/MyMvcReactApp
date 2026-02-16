@@ -12,6 +12,7 @@ Note: how to start and run spa app 'live' for debugging;
 - creds: test@test.tt / Qwerty_0;
 - added login endpoint with jwt token;
 - added swagger n checked authed endpoint with the token;
+● add sign in demo page;
 TODO: enable jwt auth login response;
 TODO: enable interceptors;
 
