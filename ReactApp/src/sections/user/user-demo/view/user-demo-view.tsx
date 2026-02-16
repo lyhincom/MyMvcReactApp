@@ -1,45 +1,58 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { getUsers, type User as ApiUser } from 'src/api/users';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../../table-no-data';
+import { emptyRows, getComparator } from '../../utils';
 import { TableEmptyRows } from '../../table-empty-rows';
 import { UserDemoTableRow } from '../user-demo-table-row';
 import { UserDemoTableHead } from '../user-demo-table-head';
 import { UserTableToolbar } from '../../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../../utils';
 
 import type { UserProps } from '../../user-table-row';
 
 // ----------------------------------------------------------------------
 
-// Generate email from name
-function generateEmail(name: string): string {
-  const emailName = name.toLowerCase().replace(/[^a-z0-9]/g, '.').replace(/\.+/g, '.');
-  return `${emailName}@example.com`;
+// Map API user to UserProps format with email
+function mapApiUserToUserProps(apiUser: ApiUser): UserProps & { email: string } {
+  return {
+    id: apiUser.id,
+    name: apiUser.name || apiUser.email || 'Unknown',
+    email: apiUser.email || '',
+    role: 'User',
+    status: 'active',
+    company: 'Company',
+    avatarUrl: apiUser.avatarUrl,
+    isVerified: apiUser.isVerified,
+  };
 }
 
-// Add email to users for demo
-const usersWithEmail = _users.map((user) => ({
-  ...user,
-  email: generateEmail(user.name),
-}));
-
 // Custom filter for email
-function applyEmailFilter({ inputData, comparator, filterName }: { inputData: any[]; comparator: any; filterName: string }) {
+function applyEmailFilter({
+  inputData,
+  comparator,
+  filterName,
+}: {
+  inputData: (UserProps & { email: string })[];
+  comparator: any;
+  filterName: string;
+}) {
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -48,24 +61,47 @@ function applyEmailFilter({ inputData, comparator, filterName }: { inputData: an
     return a[1] - b[1];
   });
 
-  inputData = stabilizedThis.map((el) => el[0]);
+  let filtered = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (user: any) => user.email.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    filtered = filtered.filter((user) =>
+      user.email.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 
-  return inputData;
+  return filtered;
 }
 
 export function UserDemoView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState('');
+  const [users, setUsers] = useState<(UserProps & { email: string })[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch users from API
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        setLoading(true);
+        setError(null);
+        const apiUsers = await getUsers();
+        const mappedUsers = apiUsers.map(mapApiUserToUserProps);
+        setUsers(mappedUsers);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch users');
+        console.error('Error fetching users:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUsers();
+  }, []);
 
   const dataFiltered = applyEmailFilter({
-    inputData: usersWithEmail,
+    inputData: users,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -117,21 +153,37 @@ export function UserDemoView() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row) => (
-                    <UserDemoTableRow key={row.id} row={row} />
-                  ))}
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center" sx={{ py: 10 }}>
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={3} align="center" sx={{ py: 10 }}>
+                      <Typography color="error">{error}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <>
+                    {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row) => (
+                        <UserDemoTableRow key={row.id} row={row} />
+                      ))}
 
-                <TableEmptyRows
-                  height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, usersWithEmail.length)}
-                />
+                    <TableEmptyRows
+                      height={68}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)}
+                    />
 
-                {notFound && <TableNoData searchQuery={filterName} />}
+                    {notFound && <TableNoData searchQuery={filterName} />}
+                  </>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -140,7 +192,7 @@ export function UserDemoView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={usersWithEmail.length}
+          count={users.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}
