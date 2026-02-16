@@ -49,17 +49,17 @@ export const navData = [
     icon: icon('ic-blog'),
   },
   {
-    title: 'Dashboard',
+    title: 'Private Dashboard',
     path: '/',
     icon: icon('ic-analytics'),
   },
   {
-    title: 'User',
+    title: 'Private User',
     path: '/user',
     icon: icon('ic-user'),
   },
   {
-    title: 'Product',
+    title: 'Private Product',
     path: '/products',
     icon: icon('ic-cart'),
     info: (
@@ -69,7 +69,7 @@ export const navData = [
     ),
   },
   {
-    title: 'Blog',
+    title: 'Private Blog',
     path: '/blog',
     icon: icon('ic-blog'),
   },
@@ -79,7 +79,7 @@ export const navData = [
     icon: icon('ic-lock'),
   },
   {
-    title: 'Not found',
+    title: 'Private Not found',
     path: '/404',
     icon: icon('ic-disabled'),
   },

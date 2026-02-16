@@ -13,7 +13,8 @@ Note: how to start and run spa app 'live' for debugging;
 - added login endpoint with jwt token;
 - added swagger n checked authed endpoint with the token;
 ● add sign in demo page;
-TODO: enable jwt auth login response;
+● enable jwt auth login response on sign in;
+TODO: hide private pages left menu;
 TODO: enable interceptors;
 
 APIs:
