@@ -1,3 +1,4 @@
+import { useAuthStore } from 'src/store/auth-store';
 import { login, type LoginRequest, type LoginResponse } from 'src/api/auth';
 
 // ----------------------------------------------------------------------
@@ -20,6 +21,9 @@ export class AuthService {
     this.setToken(response.token);
     this.setTokenExpires(response.expires);
 
+    // Update Zustand store
+    useAuthStore.getState().setAuthenticated(true);
+
     return response;
   }
 
@@ -29,6 +33,9 @@ export class AuthService {
   signOut(): void {
     this.removeToken();
     this.removeTokenExpires();
+
+    // Update Zustand store
+    useAuthStore.getState().setAuthenticated(false);
   }
 
   /**

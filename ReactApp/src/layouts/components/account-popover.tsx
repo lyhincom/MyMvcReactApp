@@ -15,6 +15,7 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { _myAccount } from 'src/_mock';
+import { useAuthStore } from 'src/store/auth-store';
 import { authService } from 'src/services/auth-service';
 
 // ----------------------------------------------------------------------
@@ -30,6 +31,7 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const pathname = usePathname();
 
@@ -56,6 +58,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
     handleClosePopover();
     router.push('/hello-world');
   }, [handleClosePopover, router]);
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <>

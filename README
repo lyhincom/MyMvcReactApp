@@ -13,8 +13,10 @@ Note: how to start and run spa app 'live' for debugging;
 - added login endpoint with jwt token;
 - added swagger n checked authed endpoint with the token;
 ● add sign in demo page;
-● enable jwt auth login response on sign in;
-TODO: hide private pages left menu;
+- enable jwt auth login response on sign in;
+- clear jwt on logout;
+- header controls: sign in button (signed out) / avatar, etc. (signed in);
+- left menu controls: hide private pages;
 TODO: enable interceptors;
 
 APIs:
