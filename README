@@ -12,8 +12,13 @@ Note: how to start and run spa app 'live' for debugging;
 - creds: test@test.tt / Qwerty_0;
 - added login endpoint with jwt token;
 - added swagger n checked authed endpoint with the token;
-TODO: enable jwt auth login response;
-TODO: enable interceptors;
+● add sign in demo page;
+- enable jwt auth login response on sign in;
+- clear jwt on logout;
+- header controls: sign in button (signed out) / avatar, etc. (signed in);
+- left menu controls: hide private pages;
+● TODO: enable interceptors for http requests: get users for authed;
+
 
 APIs:
 https://localhost:7026/api/wf

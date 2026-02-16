@@ -6,6 +6,7 @@ import Fab from '@mui/material/Fab';
 
 import { usePathname } from 'src/routes/hooks';
 
+import { useAuthStore } from 'src/store/auth-store';
 import { ThemeProvider } from 'src/theme/theme-provider';
 
 import { Iconify } from 'src/components/iconify';
@@ -18,6 +19,12 @@ type AppProps = {
 
 export default function App({ children }: AppProps) {
   useScrollToTop();
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  // Check auth state on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const githubButton = () => (
     <Fab

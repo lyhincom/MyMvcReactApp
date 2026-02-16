@@ -19,6 +19,7 @@ export const BasicInputWithListPage = lazy(() => import('src/pages/new-pages/bas
 export const ComponentInputPage = lazy(() => import('src/pages/new-pages/component-pages/component-input'));
 export const ComponentOutputPage = lazy(() => import('src/pages/new-pages/component-pages/component-output'));
 export const UnrelatedComponentsPage = lazy(() => import('src/pages/new-pages/component-pages/unrelated-components'));
+export const SignInDemoPage = lazy(() => import('src/pages/new-pages/sign-in-demo-page'));
 
 export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -64,6 +65,8 @@ export const routesSection: RouteObject[] = [
       { path: 'component-input', element: <ComponentInputPage /> },
       { path: 'component-output', element: <ComponentOutputPage /> },
       { path: 'unrelated-components', element: <UnrelatedComponentsPage /> },
+      { path: 'sign-in-page', element: <SignInDemoPage /> },
+
 
       { path: 'user', element: <UserPage /> },
       { path: 'products', element: <ProductsPage /> },

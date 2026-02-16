@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
 import { _langs, _notifications } from 'src/_mock';
+import { useAuthStore } from 'src/store/auth-store';
 
 import { NavMobile, NavDesktop } from './nav';
 import { layoutClasses } from '../core/classes';
@@ -20,6 +21,7 @@ import { _workspaces } from '../nav-config-workspace';
 import { MenuButton } from '../components/menu-button';
 import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
+import { SignInButton } from '../components/sign-in-button';
 import { AccountPopover } from '../components/account-popover';
 import { LanguagePopover } from '../components/language-popover';
 import { NotificationsPopover } from '../components/notifications-popover';
@@ -48,8 +50,12 @@ export function DashboardLayout({
   layoutQuery = 'lg',
 }: DashboardLayoutProps) {
   const theme = useTheme();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
+
+  // Filter out private pages if user is not authenticated
+  const filteredNavData = navData.filter((item) => !item.private || isAuthenticated);
 
   const renderHeader = () => {
     const headerSlotProps: HeaderSectionProps['slotProps'] = {
@@ -71,22 +77,27 @@ export function DashboardLayout({
             onClick={onOpen}
             sx={{ mr: 1, ml: -1, [theme.breakpoints.up(layoutQuery)]: { display: 'none' } }}
           />
-          <NavMobile data={navData} open={open} onClose={onClose} workspaces={_workspaces} />
+          <NavMobile data={filteredNavData} open={open} onClose={onClose} workspaces={_workspaces} />
         </>
       ),
       rightArea: (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.75 } }}>
+
+          {/** @slot Sign in button - shown when not authenticated */}
+          {!isAuthenticated && <SignInButton />}
+
+
           {/** @slot Searchbar */}
-          <Searchbar />
+          {isAuthenticated && <Searchbar />}
 
           {/** @slot Language popover */}
-          <LanguagePopover data={_langs} />
+          {isAuthenticated && <LanguagePopover data={_langs} />}
 
           {/** @slot Notifications popover */}
-          <NotificationsPopover data={_notifications} />
+          {isAuthenticated && <NotificationsPopover data={_notifications} />}
 
-          {/** @slot Account drawer */}
-          <AccountPopover data={_account} />
+          {/** @slot Account drawer - shown when authenticated */}
+          {isAuthenticated && <AccountPopover data={_account} />}
         </Box>
       ),
     };
@@ -117,7 +128,7 @@ export function DashboardLayout({
        * @Sidebar
        *************************************** */
       sidebarSection={
-        <NavDesktop data={navData} layoutQuery={layoutQuery} workspaces={_workspaces} />
+        <NavDesktop data={filteredNavData} layoutQuery={layoutQuery} workspaces={_workspaces} />
       }
       /** **************************************
        * @Footer

@@ -43,6 +43,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllersWithViews();
 
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3039")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -128,6 +140,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// Enable CORS (must be after UseRouting and before UseAuthentication)
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
