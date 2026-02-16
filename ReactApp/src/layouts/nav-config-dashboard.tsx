@@ -10,6 +10,7 @@ export type NavItem = {
   path: string;
   icon: React.ReactNode;
   info?: React.ReactNode;
+  private?: boolean;
 };
 
 export const navData = [
@@ -52,16 +53,19 @@ export const navData = [
     title: 'Private Dashboard',
     path: '/',
     icon: icon('ic-analytics'),
+    private: true,
   },
   {
     title: 'Private User',
     path: '/user',
     icon: icon('ic-user'),
+    private: true,
   },
   {
     title: 'Private Product',
     path: '/products',
     icon: icon('ic-cart'),
+    private: true,
     info: (
       <Label color="error" variant="inverted">
         +3
@@ -72,15 +76,12 @@ export const navData = [
     title: 'Private Blog',
     path: '/blog',
     icon: icon('ic-blog'),
-  },
-  {
-    title: 'Sign in',
-    path: '/sign-in',
-    icon: icon('ic-lock'),
+    private: true,
   },
   {
     title: 'Private Not found',
     path: '/404',
     icon: icon('ic-disabled'),
+    private: true,
   },
 ];

@@ -17,7 +17,8 @@ Note: how to start and run spa app 'live' for debugging;
 - clear jwt on logout;
 - header controls: sign in button (signed out) / avatar, etc. (signed in);
 - left menu controls: hide private pages;
-TODO: enable interceptors;
+● TODO: enable interceptors for http requests: get users for authed;
+
 
 APIs:
 https://localhost:7026/api/wf
