@@ -82,33 +82,36 @@ export function UserDemoView() {
 
   // Fetch users from API
   useEffect(() => {
+    const abortController = new AbortController();
     let isMounted = true;
-    let isCancelled = false;
 
     async function fetchUsers() {
       try {
         setLoading(true);
         setError(null);
         console.log('Fetching users from API...');
-        const apiUsers = await getUsers();
+        
+        // Pass abort signal to axios request
+        const apiUsers = await getUsers(abortController.signal);
         console.log('Users fetched successfully:', apiUsers);
 
-        // Only update state if component is still mounted and not cancelled
-        if (isMounted && !isCancelled) {
+        // Only update state if component is still mounted and request wasn't aborted
+        if (isMounted && !abortController.signal.aborted) {
           const mappedUsers = apiUsers.map(mapApiUserToUserProps);
           setUsers(mappedUsers);
           setLoading(false);
-        } else {
-          // If cancelled, still set loading to false
-          setLoading(false);
         }
       } catch (err) {
+        // Ignore errors from aborted requests
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
         console.error('Error in fetchUsers:', err);
-        // Always set loading to false on error, even if cancelled
         setLoading(false);
         
-        // Only update error state if component is still mounted and not cancelled
-        if (isMounted && !isCancelled) {
+        // Only update error state if component is still mounted
+        if (isMounted) {
           const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users';
           setError(errorMessage);
         }
@@ -117,13 +120,10 @@ export function UserDemoView() {
 
     fetchUsers();
 
-    // Cleanup function to prevent state updates after unmount
-    // eslint-disable-next-line consistent-return
+    // Cleanup function to abort request and prevent state updates after unmount
     return () => {
       isMounted = false;
-      isCancelled = true;
-      // Ensure loading is false on cleanup
-      setLoading(false);
+      abortController.abort();
     };
   }, []);
 
