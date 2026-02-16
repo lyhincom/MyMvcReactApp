@@ -42,7 +42,7 @@ export function UserDemoTableRow({ row }: UserDemoTableRowProps) {
             }}
           >
             <Avatar alt={row.name} src={row.avatarUrl} />
-            {row.name}
+            {(row as any).email || row.name}
           </Box>
         </TableCell>
 

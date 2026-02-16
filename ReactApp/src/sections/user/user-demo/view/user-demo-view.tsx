@@ -26,13 +26,46 @@ import type { UserProps } from '../../user-table-row';
 
 // ----------------------------------------------------------------------
 
+// Generate email from name
+function generateEmail(name: string): string {
+  const emailName = name.toLowerCase().replace(/[^a-z0-9]/g, '.').replace(/\.+/g, '.');
+  return `${emailName}@example.com`;
+}
+
+// Add email to users for demo
+const usersWithEmail = _users.map((user) => ({
+  ...user,
+  email: generateEmail(user.name),
+}));
+
+// Custom filter for email
+function applyEmailFilter({ inputData, comparator, filterName }: { inputData: any[]; comparator: any; filterName: string }) {
+  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  if (filterName) {
+    inputData = inputData.filter(
+      (user: any) => user.email.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    );
+  }
+
+  return inputData;
+}
+
 export function UserDemoView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState('');
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
+  const dataFiltered = applyEmailFilter({
+    inputData: usersWithEmail,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -78,7 +111,7 @@ export function UserDemoView() {
                 orderBy={table.orderBy}
                 onSort={table.onSort}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
+                  { id: 'email', label: 'Email' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: '' },
                 ]}
@@ -95,7 +128,7 @@ export function UserDemoView() {
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, usersWithEmail.length)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -107,7 +140,7 @@ export function UserDemoView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={_users.length}
+          count={usersWithEmail.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -122,7 +155,7 @@ export function UserDemoView() {
 
 export function useTable() {
   const [page, setPage] = useState(0);
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('email');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 
