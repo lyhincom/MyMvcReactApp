@@ -122,7 +122,15 @@ export function AuthLayout({
       sx={[
         (theme) => ({
           position: 'relative',
-          '&::before': backgroundStyles(),
+          '&::before': {
+            ...backgroundStyles(),
+            top: 'var(--layout-header-mobile-height)',
+            height: 'calc(100% - var(--layout-header-mobile-height))',
+            [theme.breakpoints.up(layoutQuery)]: {
+              top: 'var(--layout-header-desktop-height)',
+              height: 'calc(100% - var(--layout-header-desktop-height))',
+            },
+          },
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
@@ -138,7 +146,6 @@ const backgroundStyles = (): CSSObject => ({
   zIndex: 1,
   opacity: 0.24,
   width: '100%',
-  height: '100%',
   content: "''",
   position: 'absolute',
   backgroundSize: 'cover',

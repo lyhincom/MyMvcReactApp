@@ -19,14 +19,20 @@ export default function Page() {
       <meta name="keywords" content="Lesson 1" />
 
       <Box
-        sx={{
+        sx={(theme) => ({
           position: 'relative',
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - var(--layout-header-mobile-height))',
+          pt: 'var(--layout-header-mobile-height)',
+          [theme.breakpoints.up('lg')]: {
+            minHeight: 'calc(100vh - var(--layout-header-desktop-height))',
+            pt: 'var(--layout-header-desktop-height)',
+          },
           '&::before': {
             zIndex: 1,
             opacity: 0.24,
             width: '100%',
             height: '100%',
+            top: 0,
             content: "''",
             position: 'absolute',
             backgroundSize: 'cover',
@@ -34,7 +40,7 @@ export default function Page() {
             backgroundPosition: 'center center',
             backgroundImage: 'url(/assets/background/overlay.jpg)',
           },
-        }}
+        })}
       >
         <DashboardContent>
           <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>

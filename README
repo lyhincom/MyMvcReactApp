@@ -17,7 +17,7 @@ Note: how to start and run spa app 'live' for debugging;
 - clear jwt on logout;
 - header controls: sign in button (signed out) / avatar, etc. (signed in);
 - left menu controls: hide private pages;
-● TODO: enable interceptors for http requests: get users for authed;
+● enabled interceptors for http requests: get users for authed;
 
 
 APIs:
@@ -28,3 +28,5 @@ Creds:
 test@test.tt / Qwerty_0
 
 Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/minimal-free-preview.jpg]
+Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/Auth_Interceptor_1.png]
+Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/Auth_Interceptor_2.png]
