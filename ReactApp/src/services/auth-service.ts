@@ -1,5 +1,5 @@
 import { useAuthStore } from 'src/store/auth-store';
-import { login, type LoginRequest, type LoginResponse } from 'src/api/auth';
+import { login, loginWithGoogle, type LoginRequest, type LoginResponse } from 'src/api/auth';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +16,24 @@ export class AuthService {
     const response = await login(credentials);
 
     console.log('response', response);
+
+    // Store token in localStorage
+    this.setToken(response.token);
+    this.setTokenExpires(response.expires);
+
+    // Update Zustand store
+    useAuthStore.getState().setAuthenticated(true);
+
+    return response;
+  }
+
+  /**
+   * Performs Google OAuth login with ID token and stores the authentication token
+   */
+  async signInWithGoogle(idToken: string): Promise<LoginResponse> {
+    const response = await loginWithGoogle(idToken);
+
+    console.log('Google OAuth response', response);
 
     // Store token in localStorage
     this.setToken(response.token);
@@ -77,14 +95,16 @@ export class AuthService {
   /**
    * Sets the authentication token
    */
-  private setToken(token: string): void {
+  setToken(token: string): void {
     localStorage.setItem(TOKEN_KEY, token);
+    // Update Zustand store
+    useAuthStore.getState().setAuthenticated(true);
   }
 
   /**
    * Sets the token expiration date
    */
-  private setTokenExpires(expires: string): void {
+  setTokenExpires(expires: string): void {
     localStorage.setItem(TOKEN_EXPIRES_KEY, expires);
   }
 

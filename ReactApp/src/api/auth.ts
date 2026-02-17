@@ -29,3 +29,19 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
   }
 }
 
+/**
+ * Google OAuth login with ID token - doesn't require authentication token
+ */
+export async function loginWithGoogle(idToken: string): Promise<LoginResponse> {
+  try {
+    const response = await axiosInstance.post<LoginResponse>('/api/auth/google-login', {
+      idToken,
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || 'Google login failed';
+    throw new Error(errorMessage);
+  }
+}
+
