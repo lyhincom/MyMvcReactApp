@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { CONFIG } from 'src/config-global';
 import { authService } from 'src/services/auth-service';
 
 import { Iconify } from 'src/components/iconify';
@@ -51,6 +52,80 @@ export function SignInView() {
     },
     [email, password, router]
   );
+
+  // Handle Google OAuth callback - extract id_token from URL hash and sign in
+  useEffect(() => {
+    const handleGoogleCallback = async () => {
+      const hash = window.location.hash;
+      if (!hash || !hash.includes('id_token')) {
+        return;
+      }
+
+      // Extract id_token from hash
+      const hashParams = hash.substring(1); // Remove the #
+      const params = new URLSearchParams(hashParams);
+      const idToken = params.get('id_token');
+      const errorParam = params.get('error');
+
+      if (errorParam) {
+        setError(`Google authentication failed: ${errorParam}`);
+        // Clear hash from URL
+        window.history.replaceState(null, '', window.location.pathname);
+        return;
+      }
+
+      if (idToken) {
+        // Clear hash from URL immediately to prevent re-processing
+        window.history.replaceState(null, '', window.location.pathname);
+
+        // Sign in with Google using the ID token
+        setLoading(true);
+        setError(null);
+
+        try {
+          await authService.signInWithGoogle(idToken);
+          // Navigate to home page on success
+          router.push('/');
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to authenticate with Google');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Check for callback on mount
+    handleGoogleCallback();
+
+    // Also listen for hash changes (in case of delayed redirect)
+    const handleHashChange = () => {
+      if (window.location.hash.includes('id_token')) {
+        handleGoogleCallback();
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [router]);
+
+  const handleGoogleIconClick = useCallback(() => {
+    if (!CONFIG.googleClientId) {
+      setError('Google OAuth is not configured');
+      return;
+    }
+
+    // Redirect to Google OAuth
+    const params = new URLSearchParams({
+      client_id: CONFIG.googleClientId,
+      redirect_uri: `${window.location.origin}/sign-in`,
+      response_type: 'id_token',
+      scope: 'openid email profile',
+      nonce: Math.random().toString(36).substring(2, 15),
+    });
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  }, []);
 
   const renderForm = (
     <Box
@@ -167,7 +242,9 @@ export function SignInView() {
           justifyContent: 'center',
         }}
       >
-        <IconButton color="inherit">
+        <IconButton
+          onClick={handleGoogleIconClick}
+        >
           <Iconify width={22} icon="socials:google" />
         </IconButton>
         <IconButton color="inherit">

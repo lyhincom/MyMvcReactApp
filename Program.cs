@@ -39,6 +39,11 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+})
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException("Google ClientId not configured");
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret not configured");
 });
 
 builder.Services.AddControllersWithViews();
@@ -149,14 +154,20 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Register API routes first (most specific routes - these have /api/ prefix)
 app.MapControllers();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=ReactApp}")
-    .WithStaticAssets();
-
+// Register Razor Pages (Identity pages, etc.) - these have specific paths
 app.MapRazorPages()
    .WithStaticAssets();
+
+// Register React app fallback route LAST (catch-all for frontend routes)
+// This ensures frontend routes like /sign-in are handled by React
+// The {*path} catch-all will match any route not matched above
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{*path}",
+    defaults: new { controller = "Home", action = "ReactApp" })
+    .WithStaticAssets();
 
 app.Run();

@@ -6,6 +6,7 @@ using MyMvcReactApp.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth;
 
 namespace MyMvcReactApp.Controllers.API;
 
@@ -55,6 +56,63 @@ public class AuthController : ControllerBase
             Token = token,
             Expires = expires
         });
+    }
+
+    [HttpPost("google-login")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleTokenRequest request)
+    {
+        if (string.IsNullOrEmpty(request.IdToken))
+        {
+            return BadRequest(new { message = "Google ID token is required" });
+        }
+
+        try
+        {
+            var clientId = _configuration["Authentication:Google:ClientId"];
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { clientId }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
+
+            var email = payload.Email;
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email not provided by Google" });
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                // Create new user
+                user = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true
+                };
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(new { message = "Failed to create user", errors = createResult.Errors });
+                }
+            }
+
+            var token = GenerateJwtToken(user);
+            var expires = DateTime.UtcNow.AddHours(1);
+
+            return Ok(new LoginResponse
+            {
+                Token = token,
+                Expires = expires
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error validating Google token");
+            return Unauthorized(new { message = "Invalid Google token" });
+        }
     }
 
     private string GenerateJwtToken(IdentityUser user)
