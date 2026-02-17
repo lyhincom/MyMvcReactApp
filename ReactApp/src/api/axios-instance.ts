@@ -6,9 +6,10 @@ import axios, {
 } from 'axios';
 
 import { CONFIG } from 'src/config-global';
-import { authService } from 'src/services/auth-service';
 
 // ----------------------------------------------------------------------
+
+const TOKEN_KEY = 'authToken';
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -21,12 +22,14 @@ const axiosInstance: AxiosInstance = axios.create({
 // Request interceptor - Add auth token to all requests (except login)
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Skip token for login endpoint
-    if (config.url?.includes('/api/auth/login')) {
+    // Skip token for auth endpoints
+    if (config.url?.includes('/api/auth/login') || 
+        config.url?.includes('/api/auth/google-login')) {
       return config;
     }
 
-    const token = authService.getToken();
+    // Get token directly from localStorage to avoid circular dependency
+    const token = localStorage.getItem(TOKEN_KEY);
 
     // Add Authorization header if token exists
     if (token && config.headers) {
@@ -44,7 +47,9 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     // Handle 401 Unauthorized - token expired or invalid
     if (error.response?.status === 401) {
-      authService.signOut();
+      // Remove token from localStorage to avoid circular dependency
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem('tokenExpires');
       // Optionally redirect to login page
       // window.location.href = '/sign-in';
     }
