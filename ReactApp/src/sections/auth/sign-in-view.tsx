@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { CONFIG } from 'src/config-global';
 import { authService } from 'src/services/auth-service';
 
 import { Iconify } from 'src/components/iconify';
@@ -51,6 +52,23 @@ export function SignInView() {
     },
     [email, password, router]
   );
+
+  const handleGoogleIconClick = useCallback(() => {
+    if (!CONFIG.googleClientId) {
+      setError('Google OAuth is not configured');
+      return;
+    }
+
+    // Redirect to Google OAuth
+    const params = new URLSearchParams({
+      client_id: CONFIG.googleClientId,
+      redirect_uri: `${window.location.origin}/sign-in`,
+      response_type: 'id_token',
+      scope: 'openid email profile',
+      nonce: Math.random().toString(36).substring(2, 15),
+    });
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  }, []);
 
   const renderForm = (
     <Box
@@ -167,7 +185,9 @@ export function SignInView() {
           justifyContent: 'center',
         }}
       >
-        <IconButton color="inherit">
+        <IconButton
+          onClick={handleGoogleIconClick}
+        >
           <Iconify width={22} icon="socials:google" />
         </IconButton>
         <IconButton color="inherit">
