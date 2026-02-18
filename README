@@ -1,4 +1,8 @@
 ﻿﻿React SPA
+ENV: https://react.lyhin.com
+
+Description: ﻿React SPA auth app with two jwt auth 
+sign in mechanisms implemented: identity auth, google auth.
 
 ● .NET App MVC;
 ● React App in ReactFolder;
@@ -33,3 +37,8 @@ Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/ref
 Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/Auth_Interceptor_2.png]
 
 google auth: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/google-auth.drawio.png]
+
+
+Deployment:
+- BE appsettings.json: add google:clientId, google:clientSecret;
+- BE ensure jwt:key is also set;
