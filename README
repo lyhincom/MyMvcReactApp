@@ -19,10 +19,11 @@ Note: how to start and run spa app 'live' for debugging;
 - left menu controls: hide private pages;
 ● enabled interceptors for http requests: get users for authed;
 ● enable google auth: custom button;
+● set db provider to sqlite;
 
 APIs:
-https://localhost:7026/api/wf
-https://localhost:7026/api/wf/auth
+https://localhost:8001/api/wf
+https://localhost:8001/api/wf/auth
 
 Creds:
 test@test.tt / Qwerty_0
