@@ -7,6 +7,8 @@ import { varAlpha } from 'minimal-shared/utils';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
+import { ProtectedRoute } from 'src/routes/components';
+
 import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
@@ -59,20 +61,86 @@ export const routesSection: RouteObject[] = [
       </DashboardLayout>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'hello-world', element: <HelloWorldPage /> },
-      { path: 'basic-input', element: <BasicInputPage /> },
-      { path: 'basic-input-with-list', element: <BasicInputWithListPage /> },
-      { path: 'component-input', element: <ComponentInputPage /> },
-      { path: 'component-output', element: <ComponentOutputPage /> },
-      { path: 'unrelated-components', element: <UnrelatedComponentsPage /> },
-      { path: 'sign-in-page', element: <SignInDemoPage /> },
+      // Public route - accessible without authentication
+      { index: true, path: '', element: <HelloWorldPage /> },
+      {
+        path: 'basic-input',
+        element: (
+          <BasicInputPage />
+        ),
+      },
+      {
+        path: 'basic-input-with-list',
+        element: (
+          <BasicInputWithListPage />
+        ),
+      },
+      {
+        path: 'component-input',
+        element: (
+          <ComponentInputPage />
+        ),
+      },
+      {
+        path: 'component-output',
+        element: (
+          <ComponentOutputPage />
+        ),
+      },
+      {
+        path: 'unrelated-components',
+        element: (
+          <UnrelatedComponentsPage />
+        ),
+      },
+      {
+        path: 'sign-in-page',
+        element: (
+          <SignInDemoPage />
+        ),
+      },
 
-
-      { path: 'user', element: <UserPage /> },
-      { path: 'user-demo', element: <UserDemoPage /> },
-      { path: 'products', element: <ProductsPage /> },
-      { path: 'blog', element: <BlogPage /> },
+      // Protected routes - require authentication
+      {
+        path: 'dashboard',
+        element: (
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'user',
+        element: (
+          <ProtectedRoute>
+            <UserPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'user-demo',
+        element: (
+          <ProtectedRoute>
+            <UserDemoPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'products',
+        element: (
+          <ProtectedRoute>
+            <ProductsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'blog',
+        element: (
+          <ProtectedRoute>
+            <BlogPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
@@ -85,7 +153,9 @@ export const routesSection: RouteObject[] = [
   },
   {
     path: '404',
-    element: <Page404 />,
+    element: (
+      <Page404 />
+    ),
   },
   { path: '*', element: <Page404 /> },
 ];

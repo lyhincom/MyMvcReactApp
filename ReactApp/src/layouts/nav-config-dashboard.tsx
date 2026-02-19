@@ -16,7 +16,7 @@ export type NavItem = {
 export const navData = [
   {
     title: 'Hello World',
-    path: '/hello-world',
+    path: '/',
     icon: icon('ic-blog'),
   },
   {
@@ -51,7 +51,7 @@ export const navData = [
   },
   {
     title: 'Private Dashboard',
-    path: '/',
+    path: '/dashboard',
     icon: icon('ic-analytics'),
     private: true,
   },

@@ -56,7 +56,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
   const handleLogout = useCallback(() => {
     authService.signOut();
     handleClosePopover();
-    router.push('/hello-world');
+    router.push('/');
   }, [handleClosePopover, router]);
 
   // Don't render if not authenticated
