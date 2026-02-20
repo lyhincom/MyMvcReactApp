@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyMvcReactApp.Data;
 using Serilog;
-using Serilog.Events;
+using System.Security.Claims;
 using System.Text;
 
 // Configure Serilog
@@ -36,6 +37,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Configure JWT Authentication
@@ -58,7 +60,10 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtIssuer,
         ValidAudience = jwtAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+        // Map role claims from JWT token
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.Name
     };
 })
 .AddGoogle(options =>
@@ -130,14 +135,36 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
         
         var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-        var email = "test@test.tt";
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userEmail = "test@test.tt";
         var password = "Qwerty_0";
         
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await userManager.FindByEmailAsync(userEmail);
         if (user == null)
         {
-            user = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+            user = new IdentityUser { UserName = userEmail, Email = userEmail, EmailConfirmed = true };
             await userManager.CreateAsync(user, password);
+        }
+
+        var adminEmail = "admin@test.tt";
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+        if (admin == null)
+        {
+            admin = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+            var result = await userManager.CreateAsync(admin, password);
+            
+            if (result.Succeeded)
+            {
+                // Create Admin role if it doesn't exist
+                const string adminRole = "Admin";
+                if (!await roleManager.RoleExistsAsync(adminRole))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(adminRole));
+                }
+                
+                // Assign Admin role to admin user
+                await userManager.AddToRoleAsync(admin, adminRole);
+            }
         }
     }
     catch (Exception ex)

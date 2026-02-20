@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid login or password" });
         }
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtToken(user);
         var expires = DateTime.UtcNow.AddHours(1);
 
         return Ok(new LoginResponse
@@ -99,7 +99,7 @@ public class AuthController : ControllerBase
                 }
             }
 
-            var token = GenerateJwtToken(user);
+            var token = await GenerateJwtToken(user);
             var expires = DateTime.UtcNow.AddHours(1);
 
             return Ok(new LoginResponse
@@ -115,7 +115,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    private string GenerateJwtToken(IdentityUser user)
+    private async Task<string> GenerateJwtToken(IdentityUser user)
     {
         var jwtKey = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
         var jwtIssuer = _configuration["Jwt:Issuer"] ?? "MyMvcReactApp";
@@ -124,13 +124,24 @@ public class AuthController : ControllerBase
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        // Get user roles
+        var roles = await _userManager.GetRolesAsync(user);
+
+        // Build claims list
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        // Add role claims - multiple claims with same name will be serialized as array in JWT
+        foreach (var role in roles)
+        {
+            // Add as ClaimTypes.Role for ASP.NET Core Identity compatibility
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+        
         var token = new JwtSecurityToken(
             issuer: jwtIssuer,
             audience: jwtAudience,

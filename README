@@ -25,13 +25,16 @@ Note: how to start and run spa app 'live' for debugging;
 ● enable google auth: custom button;
 ● set db provider to sqlite;
 ● enable route guard for private pages;
+● role authorization;
 
 APIs:
-https://localhost:8001/api/wf
-https://localhost:8001/api/wf/auth
+https://localhost:8001/api/wf          Public
+https://localhost:8001/api/wf/auth     Authentication: [Authorization]
+https://localhost:8001/api/Users/admin Authorization:  [Authorize(Roles = "Admin")]
 
 Creds:
 test@test.tt / Qwerty_0
+admin@test.tt / Qwerty_0
 
 Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/minimal-free-preview.jpg]
 Preview: ![Preview][https://raw.githubusercontent.com/lyhincom/MyMvcReactApp/refs/heads/master/ReactApp/public/assets/images/Auth_Interceptor_1.png]

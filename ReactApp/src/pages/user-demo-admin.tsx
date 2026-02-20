@@ -9,7 +9,7 @@ export default function Page() {
     <>
       <title>{`Users Demo - ${CONFIG.appName}`}</title>
 
-      <UserDemoView isAdmin={false} />
+      <UserDemoView isAdmin />
     </>
   );
 }

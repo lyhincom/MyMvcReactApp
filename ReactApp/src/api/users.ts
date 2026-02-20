@@ -19,9 +19,10 @@ export type User = {
  * Token is automatically added via axios interceptor
  * @param signal - Optional AbortSignal to cancel the request
  */
-export async function getUsers(signal?: AbortSignal): Promise<User[]> {
+export async function getUsers(signal?: AbortSignal, isAuthorizationExample?: boolean): Promise<User[]> {
   try {
-    const response = await axiosInstance.get<User[]>('/api/users', {
+    const url = isAuthorizationExample ? '/api/users/admin' : '/api/users';
+    const response = await axiosInstance.get<User[]>(url, {
       timeout: 10000, // 10 second timeout
       signal, // Pass abort signal to cancel request
     });

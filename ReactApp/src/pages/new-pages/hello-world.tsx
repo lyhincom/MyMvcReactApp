@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -19,6 +19,11 @@ export default function Page() {
         <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
           Hi, React 👋
         </Typography>
+
+        <Box>
+          test@test.tt / Qwerty_0 - user<br />
+          admin@test.tt / Qwerty_0 - admin
+        </Box>
       </DashboardContent>
     </>
   );

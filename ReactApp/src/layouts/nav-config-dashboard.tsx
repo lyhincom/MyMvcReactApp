@@ -68,6 +68,12 @@ export const navData = [
     private: true,
   },
   {
+    title: 'Private User Demo Admin',
+    path: '/user-demo-admin',
+    icon: icon('ic-user'),
+    private: true,
+  },
+  {
     title: 'Private Product',
     path: '/products',
     icon: icon('ic-cart'),

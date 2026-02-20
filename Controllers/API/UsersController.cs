@@ -44,5 +44,10 @@ public class UsersController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while fetching users" });
         }
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin")]
+    public Task<IActionResult> GetAdmin() =>
+        GetUsers();
 }
 

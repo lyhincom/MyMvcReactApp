@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -72,7 +72,11 @@ function applyEmailFilter({
   return filtered;
 }
 
-export function UserDemoView() {
+type UserDemoViewProps = {
+  isAdmin?: boolean;
+};
+
+export function UserDemoView({ isAdmin = false }: UserDemoViewProps) {
   const table = useTable();
 
   const [filterName, setFilterName] = useState('');
@@ -90,9 +94,10 @@ export function UserDemoView() {
         setLoading(true);
         setError(null);
         console.log('Fetching users from API...');
-        
+
         // Pass abort signal to axios request
-        const apiUsers = await getUsers(abortController.signal);
+        console.log('isAdmin', isAdmin);
+        const apiUsers = await getUsers(abortController.signal, isAdmin);
         console.log('Users fetched successfully:', apiUsers);
 
         // Only update state if component is still mounted and request wasn't aborted
@@ -106,10 +111,10 @@ export function UserDemoView() {
         if (abortController.signal.aborted) {
           return;
         }
-        
+
         console.error('Error in fetchUsers:', err);
         setLoading(false);
-        
+
         // Only update error state if component is still mounted
         if (isMounted) {
           const errorMessage = err instanceof Error ? err.message : 'Failed to fetch users';
@@ -145,7 +150,7 @@ export function UserDemoView() {
         }}
       >
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          Users Demo
+          Users Demo Admin
         </Typography>
         <Button
           variant="contained"

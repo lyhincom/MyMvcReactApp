@@ -27,6 +27,7 @@ export const DashboardPage = lazy(() => import('src/pages/dashboard'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const UserDemoPage = lazy(() => import('src/pages/user-demo'));
+export const UserDemoAdminPage = lazy(() => import('src/pages/user-demo-admin'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -122,6 +123,14 @@ export const routesSection: RouteObject[] = [
         element: (
           <ProtectedRoute>
             <UserDemoPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'user-demo-admin',
+        element: (
+          <ProtectedRoute>
+            <UserDemoAdminPage />
           </ProtectedRoute>
         ),
       },
